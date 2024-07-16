@@ -2,6 +2,8 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { IAppService } from './app.service.interface';
 import { EmailValidationSignUpRequestDto } from './dto/request/emailValidationSignUp.request.dto';
@@ -10,6 +12,8 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { SignUpMailHtml } from './resource/signup/mail.html';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
+import { ValidateSignUpCodeRequestDto } from './dto/request/validateSignUpCode.request.dto';
+import { ValidateSignUpCodeResponseDto } from './dto/response/validateSignUpCode.response.dto';
 
 @Injectable()
 export class AppService implements IAppService {
@@ -42,7 +46,24 @@ export class AppService implements IAppService {
     await this.redis.set(`${to}@SIGN_UP`, code);
 
     return {
-      code: String(code)
+      code: String(code),
+    };
+  }
+
+  async validateSignUpCode(
+    request: ValidateSignUpCodeRequestDto,
+  ): Promise<ValidateSignUpCodeResponseDto> {
+    const { email, code } = request;
+
+    const redisCode = await this.redis.get(`${email}@SIGN_UP`);
+
+    if (!redisCode) throw new NotFoundException();
+    if (redisCode !== code) throw new UnauthorizedException();
+
+    await this.redis.del(`${email}@SIGN_UP`)
+
+    return {
+      isValid: true
     };
   }
 }
