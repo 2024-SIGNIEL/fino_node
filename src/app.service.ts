@@ -41,6 +41,8 @@ export class AppService implements IAppService {
 
     await this.redis.set(`${to}@SIGN_UP`, code);
 
-    return code;
+    return {
+      code: String(code)
+    };
   }
 }
