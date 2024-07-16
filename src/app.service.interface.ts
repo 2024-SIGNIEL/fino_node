@@ -2,6 +2,6 @@ import { EmailValidationSignUpRequestDto } from "./dto/request/emailValidationSi
 import { EmailValidationSignUpResponseDto } from "./dto/response/emailValidationSignUp.response.dto";
 
 export interface IAppService {
-  // emailValidateForSignUp (request: EmailValidationSignUpRequestDto): EmailValidationSignUpResponseDto
+  emailValidateForSignUp (request: EmailValidationSignUpRequestDto): EmailValidationSignUpResponseDto
   // emailValidateFor (request:): 
 }
