@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  username String
-  password String
-  role     Role
-  maximum  Int    @default(0)
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  username           String
+  password           String
+  role               Role
+  maximum            Int                  @default(0)
+  PaymentTransaction PaymentTransaction[]
 }
 
 enum Role {
@@ -23,9 +24,11 @@ enum Role {
 }
 
 model PaymentTransaction {
-  id            BigInt  @id
-  amount        Decimal
-  paymentTime   String
+  id            BigInt   @id @default(autoincrement())
+  user          User     @relation(references: [id], fields: [userId], onUpdate: Cascade, onDelete: Cascade)
+  userId        Int
+  amount        Int
+  paymentTime   DateTime
   accountHolder String
   recipient     String
   bank          String

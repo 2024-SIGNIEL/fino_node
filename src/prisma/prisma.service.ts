@@ -34,7 +34,7 @@ export class PrismaService
         email: true,
         password: true,
         role: true,
-        maximum: true
+        maximum: true,
       },
     });
   }
@@ -48,7 +48,7 @@ export class PrismaService
         email: true,
         password: true,
         role: true,
-        maximum: true
+        maximum: true,
       },
     });
   }
@@ -85,9 +85,34 @@ export class PrismaService
         AND STR_TO_DATE(paymentTime, '%Y-%m-%d')
         BETWEEN STR_TO_DATE(${startDate}, '%Y-%m-%d') AND STR_TO_DATE(${endDate}, '%Y-%m-%d')
       GROUP BY date
-    `
+    `;
 
-    return result
+    return result;
+  }
+
+  async savePayment(
+    id: number,
+    amount: number,
+    paymentTime: string,
+    accountHolder: string,
+    recipient: string,
+    bank: string,
+  ) {
+    const result = await this.paymentTransaction.create({
+      data: {
+        userId: id,
+        amount,
+        paymentTime,
+        accountHolder,
+        recipient,
+        bank,
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return result;
   }
 
   async findDailySpentByUsernameAndDate(
@@ -98,7 +123,7 @@ export class PrismaService
       where: {
         accountHolder: username,
         paymentTime: {
-          contains: date,
+          equals: new Date(date),
         },
       },
       select: {
