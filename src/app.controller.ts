@@ -53,19 +53,4 @@ export class AppController implements IAppController {
       statusMsg: '',
     };
   }
-
-  @Get('graph')
-  async getWeeklyGraphData(
-    @Query() requestQuery: GetWeeklyGraphDataRequestQueryDto,
-    @Body() requestBody: GetWeeklyGraphDataRequestBodyDto,
-  ): Promise<ControllerResponseDto<GetWeeklyGraphDataResponseDto>> {
-    this.logger.log('Get Weekly Data')
-    const data = await this.service.getWeeklyGraphData(requestQuery, requestBody);
-
-    return {
-      data,
-      statusCode: 200,
-      statusMsg: '',
-    };
-  }
 }

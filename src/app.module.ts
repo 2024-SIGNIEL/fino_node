@@ -5,6 +5,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { PrismaModule } from './prisma/prisma.module';
+import { SpendModule } from './spend/spend.module';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -49,8 +51,9 @@ import { PrismaModule } from './prisma/prisma.module';
       }),
     }),
     PrismaModule,
+    SpendModule,
   ],
   controllers: [AppController],
-  providers: [AppService, Logger],
+  providers: [AppService, PrismaService, Logger],
 })
 export class AppModule {}

@@ -13,8 +13,4 @@ export interface IAppController {
   validateSignUpCode(
     request: ValidateSignUpCodeRequestDto,
   ): Promise<ControllerResponseDto<ValidateSignUpCodeResponseDto>>;
-  getWeeklyGraphData(
-    requestQuery: GetWeeklyGraphDataRequestQueryDto,
-    requestBody: GetWeeklyGraphDataRequestBodyDto,
-  ): Promise<ControllerResponseDto<GetWeeklyGraphDataResponseDto>>;
 }

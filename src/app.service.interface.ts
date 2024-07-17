@@ -15,8 +15,4 @@ export interface IAppService {
   validateSignUpCode(
     request: ValidateSignUpCodeRequestDto,
   ): Promise<ValidateSignUpCodeResponseDto>;
-  getWeeklyGraphData(
-    requestQuery: GetWeeklyGraphDataRequestQueryDto,
-    requestBody: GetWeeklyGraphDataRequestBodyDto,
-  ): Promise<GetWeeklyGraphDataResponseDto>;
 }
