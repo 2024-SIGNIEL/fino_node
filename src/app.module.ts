@@ -1,6 +1,4 @@
 import { Logger, Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
@@ -55,7 +53,7 @@ import { AuthModule } from './auth/auth.module';
     SpendModule,
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService, Logger],
+  controllers: [],
+  providers: [PrismaService, Logger],
 })
 export class AppModule {}

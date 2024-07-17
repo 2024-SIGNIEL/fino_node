@@ -3,8 +3,10 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { compare } from 'bcrypt';
@@ -22,6 +24,12 @@ import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
 import { GetInformResponseDto } from 'src/dto/response/getInform.response.dto';
 import { ModifyInformRequestDto } from 'src/dto/request/modifyInform.request.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { EmailValidationSignUpRequestDto } from 'src/dto/request/emailValidationSignUp.request.dto';
+import { ValidateSignUpCodeRequestDto } from 'src/dto/request/validateSignUpCode.request.dto';
+import { EmailValidationSignUpResponseDto } from 'src/dto/response/emailValidationSignUp.response.dto';
+import { ValidateSignUpCodeResponseDto } from 'src/dto/response/validateSignUpCode.response.dto';
+import { SignUpMailHtml } from 'src/resource/signup/mail.html';
 
 @Injectable()
 export class AuthService extends PassportStrategy(Strategy) {
@@ -29,6 +37,7 @@ export class AuthService extends PassportStrategy(Strategy) {
     @Inject(Logger) private logger: Logger,
     @Inject(JwtService) private readonly jwt: JwtService,
     @InjectRedis() private readonly redis: Redis,
+    @Inject(MailerService) private readonly mail: MailerService,
     private prisma: PrismaService,
     private config: ConfigService,
   ) {
@@ -114,5 +123,57 @@ export class AuthService extends PassportStrategy(Strategy) {
       email: newUser.email,
       name: newUser.username,
     };
+  }
+
+  async emailValidateForSignUp(
+    request: EmailValidationSignUpRequestDto,
+  ): Promise<EmailValidationSignUpResponseDto> {
+    const { to } = request;
+    const MAIL_FROM = this.config.get<string>('MAIL_USER');
+    const MAIL_SIGNUP_SUBJECT = this.config.get<string>('MAIL_SIGNUP_SUBJECT');
+
+    const code = Math.floor(Math.random() * 999998) + 1;
+
+    const html = SignUpMailHtml(code);
+    try {
+      await this.mail.sendMail({
+        to,
+        from: MAIL_FROM,
+        subject: MAIL_SIGNUP_SUBJECT,
+        priority: 'high',
+        html,
+      });
+    } catch (e) {
+      throw new InternalServerErrorException('', e);
+    }
+
+    await this.redis.set(`${to}@SIGN_UP`, code);
+
+    return {
+      code: String(code).padStart(6, '0'),
+    };
+  }
+
+  async validateSignUpCode(
+    request: ValidateSignUpCodeRequestDto,
+  ): Promise<ValidateSignUpCodeResponseDto> {
+    const { email, code } = request;
+
+    const redisCode = await this.redis.get(`${email}@SIGN_UP`);
+
+    if (!redisCode) throw new NotFoundException();
+    if (redisCode !== code) throw new UnauthorizedException();
+
+    await this.redis.del(`${email}@SIGN_UP`);
+
+    return {
+      isValid: true,
+    };
+  }
+
+  async logout(request) {
+    const { user } = request;
+
+    await this.redis.del(`${user.id}@AccessToken`);
   }
 }
