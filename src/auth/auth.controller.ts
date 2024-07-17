@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInRequestDto } from 'src/dto/request/signIn.request.dto';
 import { SignUpReq } from 'src/dto/request/signup.request.dto';
@@ -18,10 +18,6 @@ export class AuthController {
   async signIn(@Body() request: SignInRequestDto) {
     const data = await this.service.signIn(request);
 
-    return {
-      data,
-      statusCode: 201,
-      statusMsg: '',
-    };
+    return data;
   }
 }
