@@ -32,4 +32,5 @@ model PaymentTransaction {
   paymentTime String
   accountHolder String
   recipient String
+  bank String
 }

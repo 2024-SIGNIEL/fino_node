@@ -6,6 +6,7 @@ import {
   Inject,
   Logger,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { IAppController } from './app.controller.interface';
@@ -14,6 +15,8 @@ import { EmailValidationSignUpResponseDto } from './dto/response/emailValidation
 import { ControllerResponseDto } from './dto/response/controller.response.dto';
 import { ValidateSignUpCodeRequestDto } from './dto/request/validateSignUpCode.request.dto';
 import { ValidateSignUpCodeResponseDto } from './dto/response/validateSignUpCode.response.dto';
+import { GetWeeklyGraphDataRequestBodyDto, GetWeeklyGraphDataRequestQueryDto } from './dto/request/getWeeklyGraphData.request.dto';
+import { GetWeeklyGraphDataResponseDto } from './dto/response/getWeeklyGraphData.response.dto';
 
 @Controller()
 export class AppController implements IAppController {
@@ -26,7 +29,7 @@ export class AppController implements IAppController {
   async emailValidateForSignUp(
     @Body() request: EmailValidationSignUpRequestDto,
   ): Promise<ControllerResponseDto<EmailValidationSignUpResponseDto>> {
-    this.logger.log('Send Email')
+    this.logger.log('Send Email');
     const data = await this.service.emailValidateForSignUp(request);
 
     return {
@@ -41,8 +44,23 @@ export class AppController implements IAppController {
   async validateSignUpCode(
     @Body() request: ValidateSignUpCodeRequestDto,
   ): Promise<ControllerResponseDto<ValidateSignUpCodeResponseDto>> {
-    this.logger.log('Validate code')
+    this.logger.log('Validate code');
     const data = await this.service.validateSignUpCode(request);
+
+    return {
+      data,
+      statusCode: 200,
+      statusMsg: '',
+    };
+  }
+
+  @Get('graph')
+  async getWeeklyGraphData(
+    @Query() requestQuery: GetWeeklyGraphDataRequestQueryDto,
+    @Body() requestBody: GetWeeklyGraphDataRequestBodyDto,
+  ): Promise<ControllerResponseDto<GetWeeklyGraphDataResponseDto>> {
+    this.logger.log('Get Weekly Data')
+    const data = await this.service.getWeeklyGraphData(requestQuery, requestBody);
 
     return {
       data,

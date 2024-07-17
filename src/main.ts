@@ -9,7 +9,7 @@ import { configDotenv } from 'dotenv';
 
 async function bootstrap() {
   configDotenv({
-    path: '../.env'
+    path: '../.env',
   });
   const logger = new Logger();
 
@@ -24,15 +24,14 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      forbidNonWhitelisted: true,
-      disableErrorMessages: process.env.NODE_ENV === ("prod" || "dev"),
+      transformOptions: { enableImplicitConversion: true },
     }),
   );
 
   const port: number = Number(process.env.PORT ?? 8080);
 
   await app.listen(port, () => {
-    logger.log(`Application started in port ${port}`)
+    logger.log(`Application started in port ${port}`);
   });
 }
 bootstrap();

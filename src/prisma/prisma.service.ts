@@ -24,4 +24,74 @@ export class PrismaService
   async onModuleDestroy() {
     await this.$disconnect();
   }
+
+  async findDailySpentByUsernameAndDate(
+    username: string,
+    date: string,
+  ): Promise<number> {
+    const result = await this.paymentTransaction.findMany({
+      where: {
+        accountHolder: username,
+        paymentTime: {
+          contains: date,
+        },
+      },
+      select: {
+        amount: true,
+      },
+    });
+
+    return [result.map((x) => Number(x.amount))].reduce((sum, x) => {
+      return sum + x[0];
+    }, 0);
+  }
+
+  async getWeeklySpentWithBank(
+    username: string,
+    startDate: string,
+    endDate: string,
+  ) {
+    const group: {
+      bank: string;
+      amount: number;
+    }[] = await this.$queryRaw`
+      SELECT bank, SUM(amount) as amount 
+      FROM PaymentTransaction
+      WHERE 
+        username = ${username}
+        AND STR_TO_DATE(paymentTime, '%Y-%m-%d') 
+        BETWEEN STR_TO_DATE(${startDate}, '%Y-%m-%d') AND STR_TO_DATE(${endDate}, '%Y-%m-%d')
+      GROUP BY bank
+    `;
+
+    const result = {
+      kn: 0,
+      kj: 0,
+      kb: 0,
+      ibk: 0,
+      nh: 0,
+      im: 0,
+      busan: 0,
+      suhyup: 0,
+      shinhan: 0,
+      woori: 0,
+      jb: 0,
+      sc: 0,
+      jeju: 0,
+      hana: 0,
+      kdb: 0,
+      koreaexim: 0,
+      citi: 0,
+      kbank: 0,
+      toss: 0,
+      keb: 0,
+      kakao: 0,
+    };
+
+    group.map((x) => {
+      result[x.bank] = x.amount;
+    });
+
+    return result;
+  }
 }
