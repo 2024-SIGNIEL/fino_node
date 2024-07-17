@@ -34,6 +34,7 @@ export class PrismaService
         email: true,
         password: true,
         role: true,
+        maximum: true
       },
     });
   }
@@ -47,6 +48,7 @@ export class PrismaService
         email: true,
         password: true,
         role: true,
+        maximum: true
       },
     });
   }
@@ -72,6 +74,20 @@ export class PrismaService
         maximum,
       },
     });
+  }
+
+  async findMonthlySpend(id: number, startDate: string, endDate: string) {
+    const result = await this.$queryRaw`
+      SELECT SUM(amount), paymentTime as date
+      FROM paymentTransaction
+      WHERE
+        id = ${id}
+        AND STR_TO_DATE(paymentTime, '%Y-%m-%d')
+        BETWEEN STR_TO_DATE(${startDate}, '%Y-%m-%d') AND STR_TO_DATE(${endDate}, '%Y-%m-%d')
+      GROUP BY date
+    `
+
+    return result
   }
 
   async findDailySpentByUsernameAndDate(
