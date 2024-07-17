@@ -25,6 +25,30 @@ export class PrismaService
     await this.$disconnect();
   }
 
+  async findUserById(id: number) {
+    return await this.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        role: true,
+      },
+    });
+  }
+
+  async findUserByEmail(email: string) {
+    return await this.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        role: true,
+      },
+    });
+  }
+
   async findDailySpentByUsernameAndDate(
     username: string,
     date: string,

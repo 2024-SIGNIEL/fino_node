@@ -7,6 +7,7 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { PrismaModule } from './prisma/prisma.module';
 import { SpendModule } from './spend/spend.module';
 import { PrismaService } from './prisma/prisma.service';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { PrismaService } from './prisma/prisma.service';
     }),
     PrismaModule,
     SpendModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService, Logger],
