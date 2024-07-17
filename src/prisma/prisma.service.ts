@@ -116,14 +116,16 @@ export class PrismaService
   }
 
   async findDailySpentByUsernameAndDate(
-    username: string,
-    date: string,
+    id: number,
+    startDate: string,
+    endDate: string,
   ): Promise<number> {
     const result = await this.paymentTransaction.findMany({
       where: {
-        accountHolder: username,
+        userId: id,
         paymentTime: {
-          equals: new Date(date),
+          gte: startDate,
+          lt: endDate,
         },
       },
       select: {
@@ -131,16 +133,10 @@ export class PrismaService
       },
     });
 
-    return [result.map((x) => Number(x.amount))].reduce((sum, x) => {
-      return sum + x[0];
-    }, 0);
+    return result.reduce((sum, x) => sum + x.amount, 0);
   }
 
-  async getWeeklySpentWithBank(
-    username: string,
-    startDate: string,
-    endDate: string,
-  ) {
+  async getWeeklySpentWithBank(id: number, startDate: string, endDate: string) {
     const group: {
       bank: string;
       amount: number;
@@ -148,7 +144,7 @@ export class PrismaService
       SELECT bank, SUM(amount) as amount 
       FROM PaymentTransaction
       WHERE 
-        username = ${username}
+        userId = ${id}
         AND STR_TO_DATE(paymentTime, '%Y-%m-%d') 
         BETWEEN STR_TO_DATE(${startDate}, '%Y-%m-%d') AND STR_TO_DATE(${endDate}, '%Y-%m-%d')
       GROUP BY bank
@@ -179,7 +175,7 @@ export class PrismaService
     };
 
     group.map((x) => {
-      result[x.bank] = x.amount;
+      result[x.bank] += Number(x.amount);
     });
 
     return result;

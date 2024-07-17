@@ -1,12 +1,22 @@
-import { Body, Controller, Get, Inject, Logger, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Logger,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   GetWeeklyGraphDataRequestQueryDto,
   GetWeeklyGraphDataRequestBodyDto,
 } from '../dto/request/getWeeklyGraphData.request.dto';
 import { GetWeeklyGraphDataResponseDto } from '../dto/response/getWeeklyGraphData.response.dto';
 import { SpendService } from './spend.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('spend')
+@UseGuards(AuthGuard)
 export class SpendController {
   constructor(
     private readonly service: SpendService,
@@ -24,6 +34,6 @@ export class SpendController {
       requestBody,
     );
 
-    return data
+    return data;
   }
 }
