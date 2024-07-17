@@ -106,6 +106,7 @@ export class AuthService extends PassportStrategy(Strategy) {
     return {
       email: user.email,
       name: user.username,
+      maximum: user.maximum,
     };
   }
 

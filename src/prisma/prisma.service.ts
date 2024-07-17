@@ -63,6 +63,17 @@ export class PrismaService
     });
   }
 
+  async setMaximum(id: number, maximum: number) {
+    return await this.user.update({
+      where: {
+        id,
+      },
+      data: {
+        maximum,
+      },
+    });
+  }
+
   async findDailySpentByUsernameAndDate(
     username: string,
     date: string,

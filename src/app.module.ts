@@ -6,6 +6,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { SpendModule } from './spend/spend.module';
 import { PrismaService } from './prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
+import { MainModule } from './main/main.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     SpendModule,
     AuthModule,
+    MainModule,
   ],
   controllers: [],
   providers: [PrismaService, Logger],

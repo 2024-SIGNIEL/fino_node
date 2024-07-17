@@ -1,6 +1,6 @@
 generator client {
   provider = "prisma-client-js"
-  output = "./client"
+  output   = "./client"
 }
 
 datasource db {
@@ -9,11 +9,12 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @unique
+  id       Int    @id @default(autoincrement())
+  email    String @unique
   username String
   password String
-  role Role
+  role     Role
+  maximum  Int    @default(0)
 }
 
 enum Role {
@@ -21,17 +22,11 @@ enum Role {
   BASIC
 }
 
-model RefreshToken {
-  username String @id
-  toekn String
-  timeToLive BigInt
-}
-
 model PaymentTransaction {
-  id BigInt @id
-  amount Decimal
-  paymentTime String
+  id            BigInt  @id
+  amount        Decimal
+  paymentTime   String
   accountHolder String
-  recipient String
-  bank String
+  recipient     String
+  bank          String
 }
