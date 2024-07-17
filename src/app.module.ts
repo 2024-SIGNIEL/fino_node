@@ -1,16 +1,17 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       cache: true,
       isGlobal: true,
-      envFilePath: '../.env'
+      envFilePath: '../.env',
     }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
@@ -18,11 +19,11 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
       useFactory: (config: ConfigService) => ({
         readyLog: true,
         config: {
-          host: config.get<string>("REDIS_HOST"),
-          port: config.get<number>("REDIS_PORT"),
-          password: config.get<string>("REDIS_PASSWORD"),
-        }
-      })
+          host: config.get<string>('REDIS_HOST'),
+          port: config.get<number>('REDIS_PORT'),
+          password: config.get<string>('REDIS_PASSWORD'),
+        },
+      }),
     }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -32,8 +33,8 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
           host: 'smtp.gmail.com',
           port: 587,
           auth: {
-            user: config.get<string>("MAIL_USER"),
-            pass: config.get<string>("MAIL_PASS"),
+            user: config.get<string>('MAIL_USER'),
+            pass: config.get<string>('MAIL_PASS'),
           },
         },
         defaults: {
@@ -47,8 +48,9 @@ import { RedisModule } from '@liaoliaots/nestjs-redis';
         },
       }),
     }),
+    PrismaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, Logger],
 })
 export class AppModule {}

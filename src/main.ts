@@ -8,7 +8,9 @@ import { HttpExceptionFilter } from './utils/httpException.filter';
 import { configDotenv } from 'dotenv';
 
 async function bootstrap() {
-  configDotenv();
+  configDotenv({
+    path: '../.env'
+  });
   const logger = new Logger();
 
   const app = await NestFactory.create(AppModule, {

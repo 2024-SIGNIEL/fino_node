@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Inject,
+  Logger,
+  Post,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { IAppController } from './app.controller.interface';
 import { EmailValidationSignUpRequestDto } from './dto/request/emailValidationSignUp.request.dto';
@@ -9,12 +17,16 @@ import { ValidateSignUpCodeResponseDto } from './dto/response/validateSignUpCode
 
 @Controller()
 export class AppController implements IAppController {
-  constructor(private readonly service: AppService) {}
+  constructor(
+    private readonly service: AppService,
+    @Inject(Logger) private logger: Logger,
+  ) {}
 
   @Post('signup')
   async emailValidateForSignUp(
     @Body() request: EmailValidationSignUpRequestDto,
   ): Promise<ControllerResponseDto<EmailValidationSignUpResponseDto>> {
+    this.logger.log('Send Email')
     const data = await this.service.emailValidateForSignUp(request);
 
     return {
@@ -29,6 +41,7 @@ export class AppController implements IAppController {
   async validateSignUpCode(
     @Body() request: ValidateSignUpCodeRequestDto,
   ): Promise<ControllerResponseDto<ValidateSignUpCodeResponseDto>> {
+    this.logger.log('Validate code')
     const data = await this.service.validateSignUpCode(request);
 
     return {

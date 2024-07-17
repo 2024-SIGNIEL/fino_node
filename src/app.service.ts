@@ -14,19 +14,23 @@ import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
 import { ValidateSignUpCodeRequestDto } from './dto/request/validateSignUpCode.request.dto';
 import { ValidateSignUpCodeResponseDto } from './dto/response/validateSignUpCode.response.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService implements IAppService {
   constructor(
     @Inject(MailerService) private readonly mail: MailerService,
     @InjectRedis() private readonly redis: Redis, // redis
+    private config: ConfigService,
   ) {}
 
   async emailValidateForSignUp(
     request: EmailValidationSignUpRequestDto,
   ): Promise<EmailValidationSignUpResponseDto> {
     const { to } = request;
-    const { MAIL_FROM, MAIL_SIGNUP_SUBJECT } = process.env;
+    // const { MAIL_FROM, MAIL_SIGNUP_SUBJECT } = process.env;
+    const MAIL_FROM = this.config.get<string>("MAIL_USER")
+    const MAIL_SIGNUP_SUBJECT = this.config.get<string>("MAIL_SIGNUP_SUBJECT")
 
     const code = Math.floor(Math.random() * 999998) + 1;
 
@@ -40,13 +44,13 @@ export class AppService implements IAppService {
         html,
       });
     } catch (e) {
-      throw new InternalServerErrorException(e);
+      throw new InternalServerErrorException("", e);
     }
 
     await this.redis.set(`${to}@SIGN_UP`, code);
 
     return {
-      code: String(code),
+      code: String(code).padStart(6, '0'),
     };
   }
 

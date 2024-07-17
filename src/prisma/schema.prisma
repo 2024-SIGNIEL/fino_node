@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "./client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  username String
+  password String
+  role Role
+}
+
+enum Role {
+  ADMIN
+  BASIC
+}
+
+model RefreshToken {
+  username String @id
+  toekn String
+  timeToLive BigInt
+}
+
+model PaymentTransaction {
+  id BigInt @id
+  amount Decimal
+  paymentTime String
+  accountHolder String
+  recipient String
+}
