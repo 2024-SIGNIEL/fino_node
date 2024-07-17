@@ -180,4 +180,31 @@ export class PrismaService
 
     return result;
   }
+
+  async getDataForDate(id: number, startDate: string, endDate: string) {
+    const result = await this.paymentTransaction.findMany({
+      where: {
+        userId: id,
+        paymentTime: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+      select: {
+        id: true,
+        paymentTime: true,
+        recipient: true,
+        bank: true,
+        amount: true,
+      },
+    });
+
+    return result.map(x => ({
+      id: x.id,
+      paymentTime: new Date(x.paymentTime).toISOString(),
+      recipient: x.recipient,
+      bank: x.bank,
+      amount: x.amount
+    }));
+  }
 }

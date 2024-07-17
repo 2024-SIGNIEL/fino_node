@@ -10,6 +10,7 @@ import * as isoWeek from 'dayjs/plugin/isoWeek';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import { PrismaService } from '../prisma/prisma.service';
+import { UserRequestDto } from 'src/dto/request/user.request.dto';
 
 @Injectable()
 export class SpendService implements ISpendService {
@@ -47,7 +48,7 @@ export class SpendService implements ISpendService {
         sum: await this.prisma.findDailySpentByUsernameAndDate(
           user.id,
           dateRange[0],
-          dateRange[1]
+          dateRange[1],
         ),
       },
       {
@@ -55,7 +56,7 @@ export class SpendService implements ISpendService {
         sum: await this.prisma.findDailySpentByUsernameAndDate(
           user.id,
           dateRange[1],
-          dateRange[2]
+          dateRange[2],
         ),
       },
       {
@@ -63,7 +64,7 @@ export class SpendService implements ISpendService {
         sum: await this.prisma.findDailySpentByUsernameAndDate(
           user.id,
           dateRange[2],
-          dateRange[3]
+          dateRange[3],
         ),
       },
       {
@@ -117,5 +118,22 @@ export class SpendService implements ISpendService {
         ),
       },
     };
+  }
+
+  async getDataForDay(date: string, request: UserRequestDto) {
+    const { user } = request;
+
+    dayjs.extend(isoWeek);
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+
+    dayjs.tz.setDefault('Asia/Seoul');
+
+    const startDate = dayjs(date, 'YYYY-MM-DD').tz().startOf('date').add(9, 'h').toISOString();
+    const endDate = dayjs(date, 'YYYY-MM-DD').tz().endOf('date').add(9, 'h').toISOString();
+
+    const list = await this.prisma.getDataForDate(user.id, startDate, endDate);
+
+    return { list }
   }
 }

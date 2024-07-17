@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Inject,
+  InternalServerErrorException,
   Logger,
   Query,
   UseGuards,
@@ -14,6 +15,7 @@ import {
 import { GetWeeklyGraphDataResponseDto } from '../dto/response/getWeeklyGraphData.response.dto';
 import { SpendService } from './spend.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { UserRequestDto } from 'src/dto/request/user.request.dto';
 
 @Controller('spend')
 @UseGuards(AuthGuard)
@@ -33,6 +35,16 @@ export class SpendController {
       requestQuery,
       requestBody,
     );
+
+    return data;
+  }
+
+  @Get('day')
+  async getDataForDay(
+    @Query('date') date: string,
+    @Body() request: UserRequestDto,
+  ) {
+    const data = await this.service.getDataForDay(date, request);
 
     return data;
   }

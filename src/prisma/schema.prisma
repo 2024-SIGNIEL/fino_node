@@ -24,7 +24,7 @@ enum Role {
 }
 
 model PaymentTransaction {
-  id            BigInt   @id @default(autoincrement())
+  id            Int   @id @default(autoincrement())
   user          User     @relation(references: [id], fields: [userId], onUpdate: Cascade, onDelete: Cascade)
   userId        Int
   amount        Int
