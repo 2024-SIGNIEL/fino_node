@@ -21,6 +21,7 @@ import { SignUpReq } from 'src/dto/request/signup.request.dto';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import { Redis } from 'ioredis';
 import { GetInformResponseDto } from 'src/dto/response/getInform.response.dto';
+import { ModifyInformRequestDto } from 'src/dto/request/modifyInform.request.dto';
 
 @Injectable()
 export class AuthService extends PassportStrategy(Strategy) {
@@ -96,6 +97,22 @@ export class AuthService extends PassportStrategy(Strategy) {
     return {
       email: user.email,
       name: user.username,
+    };
+  }
+
+  async modifyInform(request: ModifyInformRequestDto) {
+    let { email, name, user } = request;
+
+    if (!email) email = user.email;
+    if (!name) name = user.username;
+
+    await this.prisma.updateUser(user.id, email, name);
+
+    const newUser = await this.prisma.findUserById(user.id);
+
+    return {
+      email: newUser.email,
+      name: newUser.username,
     };
   }
 }

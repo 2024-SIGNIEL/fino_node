@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInRequestDto } from 'src/dto/request/signIn.request.dto';
 import { SignUpReq } from 'src/dto/request/signup.request.dto';
 import { AuthGuard } from './auth.guard';
+import { ModifyInformRequestDto } from 'src/dto/request/modifyInform.request.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,14 @@ export class AuthController {
   @UseGuards(AuthGuard)
   async getInform(@Body() request) {
     const data = await this.service.getInform(request);
+
+    return data;
+  }
+
+  @Patch('modify')
+  @UseGuards(AuthGuard)
+  async modifyInform(@Body() request: ModifyInformRequestDto) {
+    const data = await this.service.modifyInform(request);
 
     return data;
   }

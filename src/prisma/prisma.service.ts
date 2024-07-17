@@ -51,6 +51,18 @@ export class PrismaService
     });
   }
 
+  async updateUser(id: number, email: string, name: string) {
+    return await this.user.update({
+      where: {
+        id,
+      },
+      data: {
+        email,
+        username: name,
+      },
+    });
+  }
+
   async findDailySpentByUsernameAndDate(
     username: string,
     date: string,
