@@ -31,6 +31,7 @@ export class PrismaService
       select: {
         id: true,
         username: true,
+        email: true,
         password: true,
         role: true,
       },
@@ -43,6 +44,7 @@ export class PrismaService
       select: {
         id: true,
         username: true,
+        email: true,
         password: true,
         role: true,
       },

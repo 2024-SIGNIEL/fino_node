@@ -18,12 +18,16 @@ import { GenAccessTokenDto } from 'src/dto/response/token.response.dto';
 import * as bcrypt from 'bcrypt';
 import { Role } from 'src/prisma/client';
 import { SignUpReq } from 'src/dto/request/signup.request.dto';
+import { InjectRedis } from '@liaoliaots/nestjs-redis';
+import { Redis } from 'ioredis';
+import { GetInformResponseDto } from 'src/dto/response/getInform.response.dto';
 
 @Injectable()
 export class AuthService extends PassportStrategy(Strategy) {
   constructor(
     @Inject(Logger) private logger: Logger,
     @Inject(JwtService) private readonly jwt: JwtService,
+    @InjectRedis() private readonly redis: Redis,
     private prisma: PrismaService,
     private config: ConfigService,
   ) {
@@ -77,10 +81,21 @@ export class AuthService extends PassportStrategy(Strategy) {
 
     const accessToken = await this.genAccessToken(thisUser.id);
 
+    await this.redis.set(`${thisUser.id}@AccessToken`, accessToken.accessToken);
+
     return {
       id: thisUser.id,
       accessToken: accessToken.accessToken,
       expiredAt: accessToken.expiredAt,
+    };
+  }
+
+  async getInform(request): Promise<GetInformResponseDto> {
+    const { user } = request;
+
+    return {
+      email: user.email,
+      name: user.username,
     };
   }
 }
